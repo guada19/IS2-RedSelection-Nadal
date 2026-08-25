@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reutilizables</title>
+</head>
+<body>
+    <header th:fragment="header">
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+
+            <div class="container">
+
+                <!-- Logo / Nombre -->
+                <a class="navbar-brand fw-bold" th:href="@{/}">
+                    Administrador 1.0
+                </a>
+
+                <!-- Botón responsive -->
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarPrincipal"
+                        aria-controls="navbarPrincipal"
+                        aria-expanded="false"
+                        aria-label="Mostrar navegación">
+
+                    <span class="navbar-toggler-icon"></span>
+
+                </button>
+
+                <!-- Navegación -->
+                <div class="collapse navbar-collapse" id="navbarPrincipal">
+
+                    <ul class="navbar-nav ms-auto">
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               th:href="@{/}">
+                                Inicio
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               th:href="@{/productos}">
+                                Productos
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </nav>
+
+        <!-- Título de la aplicación -->
+        <div class="bg-primary text-white py-4 shadow-sm">
+
+            <div class="container text-center">
+
+                <h2 class="fw-light mb-1">
+                    Encabezado Reutilizable
+                </h2>
+
+                <h1 class="fw-bold mb-0">
+                    Administrador 1.0
+                </h1>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <div th:fragment="alertaError" th:if="${error != null}" class="alert alert-danger d-flex align-items-center shadow-sm rounded-4 border-0" role="alert">
+        <div class="me-3 fs-4">
+            ⚠️
+        </div>
+        <div>
+            <h6 class="fw-bold mb-1"> ¡Error! </h6>
+            <p class="mb-0" th:text="${error}"> Ha ocurrido un error. </p>
+        </div>
+    </div>
+
+    <footer th:fragment="footer"
+            class="bg-dark text-white mt-5">
+
+        <div class="container py-4">
+
+            <div class="row align-items-center">
+
+                <!-- Información -->
+                <div class="col-md-8 text-center text-md-start">
+
+                    <h6 class="fw-bold mb-1">
+                        Administrador 1.0
+                    </h6>
+
+                    <p class="text-secondary mb-0">
+                        Sistema de administración de productos
+                    </p>
+
+                </div>
+
+                <!-- Copyright -->
+                <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
+
+                    <small class="text-secondary">
+                        © 2026 IS2 RedSelection
+                    </small>
+
+                    <br>
+
+                    <small class="text-secondary">
+                        Todos los derechos reservados
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+</body>
+</html>
