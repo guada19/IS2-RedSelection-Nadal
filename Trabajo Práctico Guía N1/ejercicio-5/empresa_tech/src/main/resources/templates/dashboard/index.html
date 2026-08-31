@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main-layout('Dashboard', ~{::#dashboard-content})}">
+<body>
+
+<div id="dashboard-content">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h1>
+    </div>
+
+    <!-- Tarjetas de Métricas -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-primary text-white p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase fw-semibold mb-1">Productos</h6>
+                        <h2 class="mb-0 fw-bold" th:text="${totalProductos != null ? totalProductos : 0}">0</h2>
+                    </div>
+                    <i class="bi bi-box-seam fs-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-success text-white p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase fw-semibold mb-1">Clientes</h6>
+                        <h2 class="mb-0 fw-bold" th:text="${totalClientes != null ? totalClientes : 0}">0</h2>
+                    </div>
+                    <i class="bi bi-people fs-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-info text-white p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase fw-semibold mb-1">Proveedores</h6>
+                        <h2 class="mb-0 fw-bold" th:text="${totalProveedores != null ? totalProveedores : 0}">0</h2>
+                    </div>
+                    <i class="bi bi-truck fs-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-warning text-dark p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase fw-semibold mb-1">Ventas</h6>
+                        <h2 class="mb-0 fw-bold" th:text="${totalVentas != null ? totalVentas : 0}">0</h2>
+                    </div>
+                    <i class="bi bi-receipt fs-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla o Sección de Bienvenida -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white py-3">
+            <h5 class="card-title mb-0 fw-bold">Bienvenido al Sistema de Gestión</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Utilice el menú lateral para gestionar el inventario, realizar ventas a clientes o emitir compras a proveedores.</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

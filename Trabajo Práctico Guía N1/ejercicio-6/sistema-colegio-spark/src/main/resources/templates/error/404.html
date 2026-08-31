@@ -1,0 +1,17 @@
+<!-- error/404.html - renderizada por GlobalExceptionHandler ante RecursoNoEncontradoException -->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>No encontrado - Colegio Spark</title>
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/main.css}"/>
+</head>
+<body class="d-flex align-items-center justify-content-center vh-100">
+<div class="text-center">
+    <h1 class="display-1">404</h1>
+    <p class="lead" th:text="${mensaje} ?: 'El recurso solicitado no existe.'">No encontrado</p>
+    <a th:href="@{/panel}" class="btn-table-action">Volver al panel</a>
+</div>
+</body>
+</html>

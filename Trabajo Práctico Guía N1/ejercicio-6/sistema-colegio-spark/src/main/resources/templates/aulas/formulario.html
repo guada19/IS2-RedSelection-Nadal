@@ -1,0 +1,60 @@
+<!-- aulas/formulario.html (capa View - Thymeleaf). Incluye un <select> poblado con los Grados disponibles. -->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecera(${modoEdicion} ? 'Editar aula' : 'Nueva aula')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('aulas')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title" th:text="${modoEdicion} ? 'Editar aula' : 'Nueva aula'">Aula</h1>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/aulas}" class="text-decoration-none text-muted-green">Aulas</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page" th:text="${modoEdicion} ? 'Editar' : 'Nueva'"></li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="p-3">
+        <div class="table-card-custom p-4" style="max-width: 560px;">
+
+            <form th:action="${modoEdicion} ? @{/aulas/{id}(id=${id})} : @{/aulas}"
+                  th:object="${aulaDTO}" method="post">
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="nombre">Nombre del aula</label>
+                    <input type="text" id="nombre" th:field="*{nombre}" class="form-control-custom" placeholder="Ej: Aula A"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="capacidad">Capacidad</label>
+                    <input type="number" id="capacidad" th:field="*{capacidad}" class="form-control-custom" min="1"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('capacidad')}" th:errors="*{capacidad}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="gradoId">Grado</label>
+                    <select id="gradoId" th:field="*{gradoId}" class="form-select-custom">
+                        <option value="">Seleccionar...</option>
+                        <option th:each="grado : ${grados}" th:value="${grado.id}" th:text="${grado.nombre}"></option>
+                    </select>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('gradoId')}" th:errors="*{gradoId}"></div>
+                </div>
+
+                <button type="submit" class="btn-table-action"><i class="bi bi-check-lg"></i> Guardar</button>
+                <a th:href="@{/aulas}" class="btn-table-action">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

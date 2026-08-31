@@ -1,0 +1,53 @@
+<!-- materias/formulario.html (capa View - Thymeleaf). Ver grados/formulario.html. -->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecera(${modoEdicion} ? 'Editar materia' : 'Nueva materia')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('materias')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title" th:text="${modoEdicion} ? 'Editar materia' : 'Nueva materia'">Materia</h1>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/materias}" class="text-decoration-none text-muted-green">Materias</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page" th:text="${modoEdicion} ? 'Editar' : 'Nueva'"></li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="p-3">
+        <div class="table-card-custom p-4" style="max-width: 560px;">
+
+            <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+            <form th:action="${modoEdicion} ? @{/materias/{id}(id=${id})} : @{/materias}"
+                  th:object="${materiaDTO}" method="post">
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="nombre">Nombre de la materia</label>
+                    <input type="text" id="nombre" th:field="*{nombre}" class="form-control-custom" placeholder="Ej: Matematica"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="descripcion">Descripcion</label>
+                    <textarea id="descripcion" th:field="*{descripcion}" class="form-control-custom" rows="3"></textarea>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
+                </div>
+
+                <button type="submit" class="btn-table-action"><i class="bi bi-check-lg"></i> Guardar</button>
+                <a th:href="@{/materias}" class="btn-table-action">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

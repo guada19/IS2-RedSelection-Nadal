@@ -1,0 +1,67 @@
+<!-- asignaciones/formulario.html (capa View - Thymeleaf). Combos de Docente, Materia y Aula. -->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecera('Nueva asignacion')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('asignaciones')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Nueva asignacion</h1>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/asignaciones}" class="text-decoration-none text-muted-green">Asignaciones</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page">Nueva</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="p-3">
+        <div class="table-card-custom p-4" style="max-width: 560px;">
+
+            <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+            <form th:action="@{/asignaciones}" th:object="${asignacionDocenteDTO}" method="post">
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="docenteId">Docente</label>
+                    <select id="docenteId" th:field="*{docenteId}" class="form-select-custom">
+                        <option value="">Seleccionar...</option>
+                        <option th:each="d : ${docentes}" th:value="${d.id}" th:text="${d.apellido + ', ' + d.nombre}"></option>
+                    </select>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('docenteId')}" th:errors="*{docenteId}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="materiaId">Materia</label>
+                    <select id="materiaId" th:field="*{materiaId}" class="form-select-custom">
+                        <option value="">Seleccionar...</option>
+                        <option th:each="m : ${materias}" th:value="${m.id}" th:text="${m.nombre}"></option>
+                    </select>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('materiaId')}" th:errors="*{materiaId}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="aulaId">Aula</label>
+                    <select id="aulaId" th:field="*{aulaId}" class="form-select-custom">
+                        <option value="">Seleccionar...</option>
+                        <option th:each="au : ${aulas}" th:value="${au.id}" th:text="${au.nombre + ' (' + au.gradoNombre + ')'}"></option>
+                    </select>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('aulaId')}" th:errors="*{aulaId}"></div>
+                </div>
+
+                <button type="submit" class="btn-table-action"><i class="bi bi-check-lg"></i> Guardar</button>
+                <a th:href="@{/asignaciones}" class="btn-table-action">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

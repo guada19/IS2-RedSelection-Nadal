@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main-layout(${clienteId != null ? 'Editar Cliente' : 'Nuevo Cliente'}, ~{::#cliente-form-content})}">
+<body>
+
+    <div id="cliente-form-content" class="container-fluid px-4 py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-0 pt-4">
+                        <h1 class="h3 mb-0" th:text="${clienteId != null ? 'Editar Cliente' : 'Nuevo Cliente'}">Nuevo Cliente</h1>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="${clienteId != null} ? @{/clientes/actualizar/{id}(id=${clienteId})} : @{/clientes/guardar}"
+                              th:object="${cliente}"
+                              method="post"
+                              class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="nombre">Nombre</label>
+                                <input id="nombre" type="text" class="form-control" th:field="*{nombre}" th:classappend="${#fields.hasErrors('nombre')} ? ' is-invalid' : ''" required/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="apellido">Apellido</label>
+                                <input id="apellido" type="text" class="form-control" th:field="*{apellido}" th:classappend="${#fields.hasErrors('apellido')} ? ' is-invalid' : ''" required/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="dni">DNI</label>
+                                <input id="dni" type="text" class="form-control" th:field="*{dni}" th:classappend="${#fields.hasErrors('dni')} ? ' is-invalid' : ''" required/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="telefono">Teléfono</label>
+                                <input id="telefono" type="text" class="form-control" th:field="*{telefono}" th:classappend="${#fields.hasErrors('telefono')} ? ' is-invalid' : ''"/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
+                            </div>
+
+                            <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                                <a th:href="@{/clientes}" class="btn btn-outline-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-1"></i> Guardar Cliente
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

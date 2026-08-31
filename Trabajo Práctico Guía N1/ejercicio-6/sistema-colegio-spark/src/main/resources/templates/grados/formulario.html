@@ -1,0 +1,63 @@
+<!--
+  ============================================================================
+  grados/formulario.html         (capa View - Thymeleaf)
+  ============================================================================
+  Un unico formulario reutilizado tanto para ALTA como para EDICION de un
+  Grado. La variable "modoEdicion" (boolean) que pone el Controller en el
+  Model decide, con th:text/th:if, el titulo de la pantalla y la URL de
+  destino del <form> (POST /grados para alta, POST /grados/{id} para
+  edicion), evitando duplicar la plantilla.
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecera(${modoEdicion} ? 'Editar grado' : 'Nuevo grado')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('grados')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title" th:text="${modoEdicion} ? 'Editar grado' : 'Nuevo grado'">Grado</h1>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/grados}" class="text-decoration-none text-muted-green">Grados</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page" th:text="${modoEdicion} ? 'Editar' : 'Nuevo'"></li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="p-3">
+        <div class="table-card-custom p-4" style="max-width: 560px;">
+
+            <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+            <form th:action="${modoEdicion} ? @{/grados/{id}(id=${id})} : @{/grados}"
+                  th:object="${gradoDTO}" method="post">
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="nombre">Nombre del grado</label>
+                    <input type="text" id="nombre" th:field="*{nombre}" class="form-control-custom" placeholder="Ej: 5to Grado"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="nivel">Nivel educativo</label>
+                    <input type="text" id="nivel" th:field="*{nivel}" class="form-control-custom" placeholder="Ej: Primario"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('nivel')}" th:errors="*{nivel}"></div>
+                </div>
+
+                <button type="submit" class="btn-table-action"><i class="bi bi-check-lg"></i> Guardar</button>
+                <a th:href="@{/grados}" class="btn-table-action">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

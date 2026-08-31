@@ -1,0 +1,58 @@
+<!-- docentes/detalle.html (capa View - Thymeleaf). Muestra datos + asignaciones (materia/aula) del docente. -->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecera('Detalle del docente')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('docentes')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title" th:text="${docente.nombre + ' ' + docente.apellido}">Docente</h1>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/docentes}" class="text-decoration-none text-muted-green">Docentes</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page">Detalle</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="p-3">
+        <div class="table-card-custom p-4 mb-3" style="max-width: 640px;">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Correo</dt>
+                <dd class="col-sm-8" th:text="${docente.email}"></dd>
+                <dt class="col-sm-4">Sexo</dt>
+                <dd class="col-sm-8" th:text="${docente.sexo}"></dd>
+                <dt class="col-sm-4">Fecha de nacimiento</dt>
+                <dd class="col-sm-8" th:text="${#temporals.format(docente.fechaNacimiento, 'dd/MM/yyyy')}"></dd>
+                <dt class="col-sm-4">Estado</dt>
+                <dd class="col-sm-8" th:text="${docente.activo} ? 'Activo' : 'Inactivo'"></dd>
+            </dl>
+        </div>
+
+        <div class="table-card-custom p-4">
+            <h5>Materias y aulas asignadas</h5>
+            <table class="table-custom mt-2">
+                <thead><tr><th>Materia</th><th>Aula</th></tr></thead>
+                <tbody>
+                <tr th:each="a : ${asignaciones}">
+                    <td th:text="${a.materiaNombre}"></td>
+                    <td th:text="${a.aulaNombre}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(asignaciones)}">
+                    <td colspan="2" class="text-center text-muted-green">Sin asignaciones todavia.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

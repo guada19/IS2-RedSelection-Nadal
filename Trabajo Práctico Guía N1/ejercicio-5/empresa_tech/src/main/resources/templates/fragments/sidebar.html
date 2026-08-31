@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <nav th:fragment="sidebar" class="sidebar navbar-expand-md">
+        <div class="sidebar-brand">
+            <a th:href="@{/dashboard}" class="brand-link">
+                <span class="brand-icon"><i class="bi bi-cpu"></i></span>
+                <span>Empresa Tech</span>
+            </a>
+        </div>
+
+        <div class="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/dashboard}">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/productos}">
+                        <i class="bi bi-box-seam me-2"></i>
+                        <span>Productos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/clientes}">
+                        <i class="bi bi-people me-2"></i>
+                        <span>Clientes</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/proveedores}">
+                        <i class="bi bi-truck me-2"></i>
+                        <span>Proveedores</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/ventas}">
+                        <i class="bi bi-receipt me-2"></i>
+                        <span>Ventas a Clientes</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/compras}">
+                        <i class="bi bi-bag-check me-2"></i>
+                        <span>Compras a Proveedores</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</body>
+</html>

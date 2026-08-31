@@ -1,0 +1,66 @@
+<!-- aulas/listar.html (capa View - Thymeleaf) -->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecera('Aulas')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('aulas')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Aulas</h1>
+            <p class="page-subtitle">Aulas fisicas del colegio, agrupadas por grado.</p>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/panel}" class="text-decoration-none text-muted-green">Inicio</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page">Aulas</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="table-card-custom">
+        <div class="table-header-control">
+            <a th:href="@{/aulas/nuevo}" class="btn-table-action"><i class="bi bi-plus-lg"></i> Nueva aula</a>
+        </div>
+
+        <div class="alert alert-success m-3" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Grado</th>
+                    <th>Capacidad</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="aula : ${aulas}">
+                    <td th:text="${aula.nombre}"></td>
+                    <td th:text="${aula.gradoNombre}"></td>
+                    <td th:text="${aula.capacidad}"></td>
+                    <td class="text-center">
+                        <a th:href="@{/aulas/{id}/editar(id=${aula.id})}" class="btn-table-action"><i class="bi bi-pencil"></i></a>
+                        <form th:action="@{/aulas/{id}/eliminar(id=${aula.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('¿Eliminar esta aula?');">
+                            <button type="submit" class="btn-table-action text-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(aulas)}">
+                    <td colspan="4" class="text-center text-muted-green">No hay aulas registradas todavia.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

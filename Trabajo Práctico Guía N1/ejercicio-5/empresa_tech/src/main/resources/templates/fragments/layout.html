@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="main-layout(title, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Empresa Tech'">Empresa Tech</title>
+
+    <!-- CSS de Spark Admin -->
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/main.css}">
+</head>
+<body>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <!-- Contenido de la Página -->
+    <div id="page-content-wrapper" class="w-100">
+        <!-- Header / Navbar -->
+        <div th:replace="~{fragments/header :: header}"></div>
+
+        <!-- Alertas / Mensajes Flash -->
+        <div class="container-fluid px-4">
+            <div th:replace="~{fragments/messages :: messages}"></div>
+        </div>
+
+        <!-- Área Dinámica de Contenido -->
+        <div class="container-fluid px-4 py-3">
+            <main th:replace="${content}">
+                <!-- Aquí se inyecta la pantalla hija sin recursión -->
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </div>
+</div>
+
+<!-- Scripts JS -->
+<script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

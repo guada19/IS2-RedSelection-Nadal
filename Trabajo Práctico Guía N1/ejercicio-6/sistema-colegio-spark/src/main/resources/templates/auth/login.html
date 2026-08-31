@@ -1,0 +1,93 @@
+<!--
+  ============================================================================
+  auth/login.html                (capa View - Thymeleaf)
+  ============================================================================
+  Pantalla publica de inicio de sesion. Adaptada de la plantilla original
+  page-login.html, reemplazando el <form action="index.html" method="GET">
+  estatico por un formulario real que envia POST a "/login", procesado
+  directamente por el filtro de Spring Security (ver SecurityConfig,
+  formLogin().loginProcessingUrl("/login")). Por eso este formulario NO
+  necesita el token CSRF manual: Spring Security lo agrega/valida igual para
+  el login, y ademas Thymeleaf lo inyecta automaticamente en cualquier
+  <form> gracias a thymeleaf-extras-springsecurity6.
+
+  Parametros de query string que maneja SecurityConfig:
+    ?error  -> credenciales invalidas (failureUrl("/login?error"))
+    ?logout -> el usuario cerro sesion correctamente
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Iniciar sesion - Colegio Spark</title>
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/main.css}"/>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-bg-shape login-bg-shape-1"></div>
+    <div class="login-bg-shape login-bg-shape-2"></div>
+
+    <div class="login-card">
+
+        <a th:href="@{/login}" class="login-brand text-decoration-none">
+            <i class="bi bi-mortarboard-fill"></i>
+            <span>Colegio Spark</span>
+        </a>
+
+        <p class="login-subtitle">Sistema de Gestion Escolar - Acceso para docentes</p>
+
+        <!-- Mensaje de exito tras un registro correcto (flash attribute) -->
+        <div class="alert alert-success" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+
+        <!-- Mensaje de credenciales invalidas -->
+        <div class="alert alert-danger" th:if="${param.error}">
+            El correo o la contraseña ingresados son incorrectos.
+        </div>
+
+        <!-- Mensaje de cierre de sesion exitoso -->
+        <div class="alert alert-info" th:if="${param.logout}">
+            Cerraste sesion correctamente.
+        </div>
+
+        <form th:action="@{/login}" method="post" class="needs-validation" novalidate>
+
+            <div class="login-form-group">
+                <label for="email" class="login-form-label">Correo electronico</label>
+                <div class="login-input-group">
+                    <i class="bi bi-envelope input-icon"></i>
+                    <input type="email" id="email" name="email" class="login-input"
+                           placeholder="nombre@colegio.com" required autofocus/>
+                </div>
+            </div>
+
+            <div class="login-form-group">
+                <label for="password" class="login-form-label">Contraseña</label>
+                <div class="login-input-group">
+                    <i class="bi bi-shield-lock input-icon"></i>
+                    <input type="password" id="password" name="password" class="login-input login-input-password"
+                           placeholder="••••••••" required/>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <span>Ingresar</span>
+                <i class="bi bi-arrow-right"></i>
+            </button>
+
+        </form>
+
+        <p class="login-footer-text">
+            ¿Sos docente y todavia no tenes cuenta? <a th:href="@{/registro}">Registrate aca</a>
+        </p>
+
+    </div>
+</div>
+
+<script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

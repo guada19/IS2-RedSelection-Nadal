@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Fragmento de Mensajes y Alertas -->
+<div th:fragment="messages">
+
+    <!-- Mensaje de Éxito -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show my-3" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}">Operación exitosa.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Mensaje de Error Flash / Negocio -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show my-3" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}">Ocurrió un error.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Mensaje Informativo -->
+    <div th:if="${infoMessage}" class="alert alert-info alert-dismissible fade show my-3" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        <span th:text="${infoMessage}">Información general.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Mensajes específicos de Login de Spring Security -->
+    <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show my-3" role="alert">
+        <i class="bi bi-x-circle-fill me-2"></i>
+        <span>Usuario o contraseña incorrectos.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${param.logout}" class="alert alert-success alert-dismissible fade show my-3" role="alert">
+        <i class="bi bi-box-arrow-right me-2"></i>
+        <span>Ha cerrado sesión correctamente.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!--
+  docentes/formulario.html (capa View - Thymeleaf). Edicion, por parte de un
+  ADMIN, de los datos personales de un docente ya existente. No incluye
+  email ni password (ver DocenteEdicionDTO).
+-->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecera('Editar docente')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('docentes')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Editar docente</h1>
+            <p class="page-subtitle" th:text="${emailDocente}"></p>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/docentes}" class="text-decoration-none text-muted-green">Docentes</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page">Editar</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="p-3">
+        <div class="table-card-custom p-4" style="max-width: 560px;">
+
+            <form th:action="@{/docentes/{id}(id=${id})}" th:object="${docenteEdicionDTO}" method="post">
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="nombre">Nombre</label>
+                    <input type="text" id="nombre" th:field="*{nombre}" class="form-control-custom"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="apellido">Apellido</label>
+                    <input type="text" id="apellido" th:field="*{apellido}" class="form-control-custom"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="sexo">Sexo</label>
+                    <select id="sexo" th:field="*{sexo}" class="form-select-custom">
+                        <option value="MASCULINO">Masculino</option>
+                        <option value="FEMENINO">Femenino</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="fechaNacimiento">Fecha de nacimiento</label>
+                    <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}" class="form-control-custom"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></div>
+                </div>
+
+                <button type="submit" class="btn-table-action"><i class="bi bi-check-lg"></i> Guardar</button>
+                <a th:href="@{/docentes}" class="btn-table-action">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

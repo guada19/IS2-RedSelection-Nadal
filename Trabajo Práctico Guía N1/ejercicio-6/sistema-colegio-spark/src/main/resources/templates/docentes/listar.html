@@ -1,0 +1,75 @@
+<!--
+  docentes/listar.html (capa View - Thymeleaf). No hay boton "Nuevo docente":
+  el alta es siempre por auto-registro publico (ver auth/registro.html); el
+  administrador solo ve, edita datos personales y activa/desactiva cuentas.
+-->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecera('Docentes')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('docentes')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Docentes</h1>
+            <p class="page-subtitle">Docentes registrados en el sistema (el alta la realiza cada docente desde /registro).</p>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/panel}" class="text-decoration-none text-muted-green">Inicio</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page">Docentes</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="table-card-custom">
+        <div class="alert alert-success m-3" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                <tr>
+                    <th>Apellido y Nombre</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="docente : ${docentes}">
+                    <td th:text="${docente.apellido + ', ' + docente.nombre}"></td>
+                    <td th:text="${docente.email}"></td>
+                    <td th:text="${docente.rol}"></td>
+                    <td>
+                        <span th:if="${docente.activo}" class="badge bg-success">Activo</span>
+                        <span th:unless="${docente.activo}" class="badge bg-secondary">Inactivo</span>
+                    </td>
+                    <td class="text-center">
+                        <a th:href="@{/docentes/{id}(id=${docente.id})}" class="btn-table-action"><i class="bi bi-eye"></i></a>
+                        <a th:href="@{/docentes/{id}/editar(id=${docente.id})}" class="btn-table-action"><i class="bi bi-pencil"></i></a>
+                        <form th:if="${docente.activo}" th:action="@{/docentes/{id}/desactivar(id=${docente.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('¿Desactivar a este docente?');">
+                            <button type="submit" class="btn-table-action text-danger"><i class="bi bi-slash-circle"></i></button>
+                        </form>
+                        <form th:unless="${docente.activo}" th:action="@{/docentes/{id}/activar(id=${docente.id})}" method="post" class="d-inline">
+                            <button type="submit" class="btn-table-action text-success"><i class="bi bi-check-circle"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(docentes)}">
+                    <td colspan="5" class="text-center text-muted-green">No hay docentes registrados todavia.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

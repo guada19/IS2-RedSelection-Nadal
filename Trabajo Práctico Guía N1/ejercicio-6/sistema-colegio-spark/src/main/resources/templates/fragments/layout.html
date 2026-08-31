@@ -1,0 +1,190 @@
+<!--
+  ============================================================================
+  fragments/layout.html          (capa View - Thymeleaf)
+  ============================================================================
+  Este archivo NO es una pagina en si misma: es un contenedor de FRAGMENTOS
+  reutilizables (th:fragment) que las demas plantillas incluyen mediante
+  th:replace/th:insert, evitando repetir en cada pantalla el <head>, la
+  barra lateral (sidebar) y la barra superior (topbar).
+
+  Fragmentos definidos aca:
+    - "cabecera(titulo)"    : bloque <head> comun (CSS de la plantilla Spark Admin).
+                              Se llama "cabecera" y no "head" a proposito: si se
+                              llamara igual que la etiqueta HTML <head>, Thymeleaf
+                              puede confundir el nombre del fragmento con un
+                              selector de markup por nombre de etiqueta (busca la
+                              etiqueta <head> real en vez del th:fragment), lo que
+                              rompe el pasaje de parametros posicionales como
+                              cabecera('Panel principal') con el error
+                              "specifies synthetic parameters, but the resolved
+                              fragment does not match a fragment signature".
+    - "sidebar(activo)"    : menu lateral de navegacion; el parametro "activo"
+                              (ej: 'alumnos', 'docentes') permite resaltar el
+                              item de menu correspondiente a la pantalla actual.
+    - "topbar"             : barra superior con el nombre y el menu del
+                              docente logueado (datos reales via Spring
+                              Security, no hardcodeados como en la plantilla
+                              original).
+    - "scripts"            : JS comun de Bootstrap al final del <body>.
+
+  INTEGRACION CON SPRING SECURITY EN LA VISTA:
+    El namespace xmlns:sec (thymeleaf-extras-springsecurity6) permite:
+      - sec:authorize="hasRole('ADMIN')"   -> el elemento SOLO se renderiza
+        si el usuario logueado tiene ese rol (oculta del menu, por ejemplo,
+        "Alumnos" o "Materias" a un docente sin rol ADMIN).
+      - sec:authentication="name"          -> imprime el username (email) del
+        usuario autenticado.
+  ============================================================================
+-->
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <!--/* ============ FRAGMENTO: cabecera ============ */-->
+    <th:block th:fragment="cabecera(titulo)">
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title th:text="${titulo} + ' - Colegio Spark'">Colegio Spark</title>
+        <link rel="icon" type="image/png" th:href="@{/assets/images/favicon.ico}"/>
+        <link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}"/>
+        <link rel="stylesheet" th:href="@{/assets/libs/flatpickr/flatpickr.min.css}"/>
+        <link rel="stylesheet" th:href="@{/assets/css/main.css}"/>
+    </th:block>
+</head>
+<body>
+
+<!--/* ============ FRAGMENTO: sidebar(activo) ============ */-->
+<div class="sidebar-wrapper" id="sidebar" th:fragment="sidebar(activo)">
+    <a th:href="@{/panel}" class="sidebar-brand">
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>Colegio Spark</span>
+    </a>
+
+    <div class="flex-grow-1 overflow-y-auto">
+        <div class="sidebar-menu-section">
+            <div class="sidebar-menu-title">Principal</div>
+            <ul class="sidebar-menu-list">
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/panel}" class="sidebar-menu-link"
+                       th:classappend="${activo == 'panel'} ? ' active'">
+                        <i class="bi bi-grid-fill"></i>
+                        <span>Panel principal</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Secciones de administracion academica: solo visibles para ADMIN -->
+        <div class="sidebar-menu-section" sec:authorize="hasRole('ADMIN')">
+            <div class="sidebar-menu-title">Administracion</div>
+            <ul class="sidebar-menu-list">
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/alumnos}" class="sidebar-menu-link" th:classappend="${activo == 'alumnos'} ? ' active'">
+                        <i class="bi bi-people-fill"></i><span>Alumnos</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/grados}" class="sidebar-menu-link" th:classappend="${activo == 'grados'} ? ' active'">
+                        <i class="bi bi-bar-chart-steps"></i><span>Grados</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/aulas}" class="sidebar-menu-link" th:classappend="${activo == 'aulas'} ? ' active'">
+                        <i class="bi bi-door-open-fill"></i><span>Aulas</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/materias}" class="sidebar-menu-link" th:classappend="${activo == 'materias'} ? ' active'">
+                        <i class="bi bi-journal-bookmark-fill"></i><span>Materias</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/docentes}" class="sidebar-menu-link" th:classappend="${activo == 'docentes'} ? ' active'">
+                        <i class="bi bi-person-badge-fill"></i><span>Docentes</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/asignaciones}" class="sidebar-menu-link" th:classappend="${activo == 'asignaciones'} ? ' active'">
+                        <i class="bi bi-diagram-3-fill"></i><span>Asignaciones</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Notas: visible para ADMIN y DOCENTE -->
+        <div class="sidebar-menu-section">
+            <div class="sidebar-menu-title">Academico</div>
+            <ul class="sidebar-menu-list">
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/notas}" class="sidebar-menu-link" th:classappend="${activo == 'notas'} ? ' active'">
+                        <i class="bi bi-pencil-square"></i><span>Notas</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-menu-section">
+            <div class="sidebar-menu-title">Mi cuenta</div>
+            <ul class="sidebar-menu-list">
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/perfil}" class="sidebar-menu-link" th:classappend="${activo == 'perfil'} ? ' active'">
+                        <i class="bi bi-person-circle"></i><span>Mi perfil</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/perfil/password}" class="sidebar-menu-link" th:classappend="${activo == 'password'} ? ' active'">
+                        <i class="bi bi-key-fill"></i><span>Cambiar contraseña</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="sidebar-profile">
+        <img th:src="@{/assets/images/avatar.png}" alt="Docente" class="sidebar-profile-img"/>
+        <div class="sidebar-profile-info">
+            <div class="sidebar-profile-name" sec:authentication="name">docente@colegio.com</div>
+            <div class="sidebar-profile-email" sec:authorize="hasRole('ADMIN')">Administrador</div>
+            <div class="sidebar-profile-email" sec:authorize="hasRole('DOCENTE')">Docente</div>
+        </div>
+    </div>
+</div>
+
+<!--/* ============ FRAGMENTO: topbar ============ */-->
+<header class="navbar-custom" th:fragment="topbar">
+    <div class="navbar-left">
+        <button class="sidebar-toggle-btn me-2" id="sidebar-toggle" aria-label="Toggle Navigation">
+            <i class="bi bi-list"></i>
+        </button>
+    </div>
+    <div class="navbar-actions">
+        <div class="dropdown ms-2">
+            <button class="navbar-profile-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img th:src="@{/assets/images/avatar.png}" alt="Perfil" class="navbar-profile-img"/>
+                <span class="navbar-profile-name d-none d-md-inline" sec:authentication="name">docente</span>
+                <i class="bi bi-chevron-down navbar-profile-caret"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-profile">
+                <li><a class="dropdown-item" th:href="@{/perfil}"><i class="bi bi-person"></i> Mi perfil</a></li>
+                <li><a class="dropdown-item" th:href="@{/perfil/password}"><i class="bi bi-key"></i> Cambiar contraseña</a></li>
+                <li><hr class="dropdown-divider"/></li>
+                <li>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="dropdown-item text-danger border-0 bg-transparent">
+                            <i class="bi bi-box-arrow-right"></i> Cerrar sesion
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<!--/* ============ FRAGMENTO: scripts ============ */-->
+<th:block th:fragment="scripts">
+    <script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/libs/flatpickr/flatpickr.min.js}"></script>
+    <script th:src="@{/assets/js/dashboard.js}"></script>
+</th:block>
+
+</body>
+</html>

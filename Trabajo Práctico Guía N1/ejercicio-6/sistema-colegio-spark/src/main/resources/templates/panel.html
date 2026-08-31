@@ -1,0 +1,73 @@
+<!--
+  ============================================================================
+  panel.html                     (capa View - Thymeleaf)
+  ============================================================================
+  Pantalla de inicio tras el login (/panel). A pedido de la consigna, NO
+  reproduce el dashboard con graficos de la plantilla original (index.html) -
+  esa parte se descarta explicitamente. En su lugar, se arma un panel simple
+  de bienvenida reutilizando el layout general (sidebar + topbar) de la
+  plantilla, con algunos totales generales que HomeController calcula.
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: cabecera('Panel principal')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('panel')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Panel principal</h1>
+            <p class="page-subtitle">
+                Bienvenido/a, <span sec:authentication="name">docente</span>.
+            </p>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item active text-main" aria-current="page">Panel principal</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row g-3 p-3">
+        <div class="col-md-4">
+            <div class="table-card-custom p-4">
+                <h6 class="text-muted-green mb-1">Alumnos registrados</h6>
+                <h2 class="mb-0" th:text="${totalAlumnos}">0</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="table-card-custom p-4">
+                <h6 class="text-muted-green mb-1">Docentes registrados</h6>
+                <h2 class="mb-0" th:text="${totalDocentes}">0</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="table-card-custom p-4">
+                <h6 class="text-muted-green mb-1">Materias dictadas</h6>
+                <h2 class="mb-0" th:text="${totalMaterias}">0</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-3">
+        <div class="table-card-custom p-4">
+            <h5>Accesos rapidos</h5>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/alumnos}" class="btn-table-action"><i class="bi bi-people-fill"></i> Alumnos</a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/docentes}" class="btn-table-action"><i class="bi bi-person-badge-fill"></i> Docentes</a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/asignaciones}" class="btn-table-action"><i class="bi bi-diagram-3-fill"></i> Asignaciones</a>
+                <a th:href="@{/notas}" class="btn-table-action"><i class="bi bi-pencil-square"></i> Notas</a>
+                <a th:href="@{/perfil}" class="btn-table-action"><i class="bi bi-person-circle"></i> Mi perfil</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

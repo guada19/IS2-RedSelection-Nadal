@@ -1,0 +1,137 @@
+<!--
+  ============================================================================
+  notas/formulario.html          (capa View - Thymeleaf)
+  ============================================================================
+  Formulario de carga de una nota. El docente primero elige una de SUS
+  asignaciones (combinacion Materia + Aula que tiene a cargo, resuelta en
+  NotaController#poblarAsignacionesDelDocente), y recien despues elige al
+  alumno DENTRO de esa aula.
+
+  Como NotaDTO solo tiene alumnoId y materiaId (el aulaId se infiere del
+  alumno elegido, ver Alumno.aula), la logica es:
+    1) El <select id="asignacion"> lista las asignaciones del docente, con
+       atributos data-materia-id / data-aula-id en cada <option>.
+    2) Un pequeño script, al cambiar esa seleccion, copia el materiaId al
+       campo oculto real (*{materiaId}) y filtra el <select id="alumnoId">
+       para mostrar solo los alumnos de esa aula (usando el atributo
+       data-aula-id que trae cada <option> de alumno).
+  Esto evita una llamada AJAX extra: todos los datos ya viajaron en el HTML.
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecera('Cargar nota')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('notas')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Cargar nota</h1>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/notas}" class="text-decoration-none text-muted-green">Notas</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page">Cargar</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="p-3">
+        <div class="table-card-custom p-4" style="max-width: 640px;">
+
+            <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+            <div class="alert alert-warning" th:if="${#lists.isEmpty(asignaciones)}">
+                Todavia no tenes materias/aulas asignadas. Pedile a un administrador que te asigne alguna
+                desde la seccion "Asignaciones".
+            </div>
+
+            <form th:action="@{/notas}" th:object="${notaDTO}" method="post" id="formNota">
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="asignacion">Materia / Aula (tus asignaciones)</label>
+                    <select id="asignacion" class="form-select-custom">
+                        <option value="">Seleccionar...</option>
+                        <option th:each="a : ${asignaciones}"
+                                th:value="${a.id}"
+                                th:attr="data-materia-id=${a.materiaId},data-aula-id=${a.aulaId}"
+                                th:text="${a.materiaNombre + ' - ' + a.aulaNombre}"></option>
+                    </select>
+                </div>
+
+                <!-- Campo real enviado al Controller (NotaDTO.materiaId), completado por JS -->
+                <input type="hidden" th:field="*{materiaId}" id="materiaId"/>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="alumnoId">Alumno</label>
+                    <select th:field="*{alumnoId}" id="alumnoId" class="form-select-custom">
+                        <option value="">Elegi primero una materia/aula...</option>
+                        <option th:each="al : ${alumnos}"
+                                th:value="${al.id}"
+                                th:attr="data-aula-id=${al.aulaId}"
+                                th:text="${al.apellido + ', ' + al.nombre}"
+                                style="display:none;"></option>
+                    </select>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('alumnoId')}" th:errors="*{alumnoId}"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom" for="valor">Calificacion (1.00 a 10.00)</label>
+                        <input type="number" step="0.01" min="1" max="10" id="valor" th:field="*{valor}" class="form-control-custom"/>
+                        <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('valor')}" th:errors="*{valor}"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom" for="periodo">Periodo</label>
+                        <input type="text" id="periodo" th:field="*{periodo}" class="form-control-custom" placeholder="Ej: 1er Trimestre"/>
+                        <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('periodo')}" th:errors="*{periodo}"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="fechaEvaluacion">Fecha de evaluacion</label>
+                    <input type="date" id="fechaEvaluacion" th:field="*{fechaEvaluacion}" class="form-control-custom"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('fechaEvaluacion')}" th:errors="*{fechaEvaluacion}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="observaciones">Observaciones (opcional)</label>
+                    <textarea id="observaciones" th:field="*{observaciones}" class="form-control-custom" rows="2"></textarea>
+                </div>
+
+                <button type="submit" class="btn-table-action"><i class="bi bi-check-lg"></i> Guardar nota</button>
+                <a th:href="@{/notas}" class="btn-table-action">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+
+<!--
+  Script propio de esta pantalla: al elegir la Materia/Aula (asignacion),
+  completa el campo oculto materiaId y habilita/filtra el select de alumnos
+  para que solo aparezcan los del aula elegida.
+-->
+<script th:inline="javascript">
+    document.getElementById('asignacion').addEventListener('change', function () {
+        var opcionSeleccionada = this.options[this.selectedIndex];
+        var materiaId = opcionSeleccionada.getAttribute('data-materia-id');
+        var aulaId = opcionSeleccionada.getAttribute('data-aula-id');
+
+        document.getElementById('materiaId').value = materiaId || '';
+
+        var selectAlumno = document.getElementById('alumnoId');
+        var opciones = selectAlumno.querySelectorAll('option[data-aula-id]');
+        opciones.forEach(function (op) {
+            op.style.display = (op.getAttribute('data-aula-id') === aulaId) ? '' : 'none';
+        });
+        selectAlumno.value = '';
+    });
+</script>
+
+</body>
+</html>

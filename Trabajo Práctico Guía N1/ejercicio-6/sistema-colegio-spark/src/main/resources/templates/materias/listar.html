@@ -1,0 +1,67 @@
+<!--
+  materias/listar.html (capa View - Thymeleaf). Ver grados/listar.html para
+  el detalle comentado del mismo patron de listado.
+-->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecera('Materias')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('materias')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Materias</h1>
+            <p class="page-subtitle">Asignaturas dictadas en el colegio.</p>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/panel}" class="text-decoration-none text-muted-green">Inicio</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page">Materias</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="table-card-custom">
+        <div class="table-header-control">
+            <a th:href="@{/materias/nuevo}" class="btn-table-action"><i class="bi bi-plus-lg"></i> Nueva materia</a>
+        </div>
+
+        <div class="alert alert-success m-3" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="materia : ${materias}">
+                    <td th:text="${materia.nombre}"></td>
+                    <td th:text="${materia.descripcion}"></td>
+                    <td class="text-center">
+                        <a th:href="@{/materias/{id}/editar(id=${materia.id})}" class="btn-table-action"><i class="bi bi-pencil"></i></a>
+                        <form th:action="@{/materias/{id}/eliminar(id=${materia.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('¿Eliminar esta materia?');">
+                            <button type="submit" class="btn-table-action text-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(materias)}">
+                    <td colspan="3" class="text-center text-muted-green">No hay materias registradas todavia.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

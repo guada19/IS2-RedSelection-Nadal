@@ -1,0 +1,118 @@
+<!--
+  ============================================================================
+  auth/registro.html             (capa View - Thymeleaf)
+  ============================================================================
+  Formulario publico de auto-registro de un docente nuevo. Envia sus datos
+  como DocenteRegistroDTO (th:object) hacia AuthController#registrar (POST
+  /registro).
+
+  ATRIBUTOS THYMELEAF DESTACADOS:
+    th:object="${docenteRegistroDTO}"  -> vincula el <form> al DTO puesto en
+        el Model por el Controller (Model-Binding de Thymeleaf + Spring MVC).
+    th:field="*{propiedad}"            -> genera automaticamente los atributos
+        id/name/value del <input>, enlazados a la propiedad del DTO indicada.
+        Ademas, si el campo tuvo un error de validacion, Thymeleaf agrega
+        solo el valor que el usuario habia tecleado (no se pierde lo tipeado).
+    th:errors="*{propiedad}"           -> muestra el mensaje de la anotacion
+        de validacion que fallo (ej: @NotBlank, @Email) para ese campo.
+    #fields.hasErrors('*{propiedad}')  -> helper de Thymeleaf para saber si
+        ese campo especifico tiene errores (usado para pintar de rojo el input).
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Registro de docente - Colegio Spark</title>
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/main.css}"/>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-bg-shape login-bg-shape-1"></div>
+    <div class="login-bg-shape login-bg-shape-2"></div>
+
+    <div class="login-card" style="max-width: 560px;">
+
+        <a th:href="@{/login}" class="login-brand text-decoration-none">
+            <i class="bi bi-mortarboard-fill"></i>
+            <span>Colegio Spark</span>
+        </a>
+        <p class="login-subtitle">Registro de docentes - completá tus datos para crear tu cuenta</p>
+
+        <div class="alert alert-danger" th:if="${errorEmail}" th:text="${errorEmail}"></div>
+        <div class="alert alert-danger" th:if="${errorConfirmacion}" th:text="${errorConfirmacion}"></div>
+
+        <form th:action="@{/registro}" th:object="${docenteRegistroDTO}" method="post" novalidate>
+
+            <div class="row">
+                <div class="col-md-6 login-form-group">
+                    <label class="login-form-label" for="nombre">Nombre</label>
+                    <input type="text" id="nombre" th:field="*{nombre}" class="login-input"
+                           th:classappend="${#fields.hasErrors('nombre')} ? ' is-invalid-custom'"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
+                <div class="col-md-6 login-form-group">
+                    <label class="login-form-label" for="apellido">Apellido</label>
+                    <input type="text" id="apellido" th:field="*{apellido}" class="login-input"
+                           th:classappend="${#fields.hasErrors('apellido')} ? ' is-invalid-custom'"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 login-form-group">
+                    <label class="login-form-label" for="sexo">Sexo</label>
+                    <select id="sexo" th:field="*{sexo}" class="login-input">
+                        <option value="">Seleccionar...</option>
+                        <option value="MASCULINO">Masculino</option>
+                        <option value="FEMENINO">Femenino</option>
+                    </select>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('sexo')}" th:errors="*{sexo}"></div>
+                </div>
+                <div class="col-md-6 login-form-group">
+                    <label class="login-form-label" for="fechaNacimiento">Fecha de nacimiento</label>
+                    <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}" class="login-input"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></div>
+                </div>
+            </div>
+
+            <div class="login-form-group">
+                <label class="login-form-label" for="email">Correo personal (sera tu usuario de acceso)</label>
+                <input type="email" id="email" th:field="*{email}" class="login-input" placeholder="nombre@correo.com"/>
+                <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 login-form-group">
+                    <label class="login-form-label" for="password">Contraseña</label>
+                    <input type="password" id="password" th:field="*{password}" class="login-input"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+                <div class="col-md-6 login-form-group">
+                    <label class="login-form-label" for="confirmarPassword">Confirmar contraseña</label>
+                    <input type="password" id="confirmarPassword" th:field="*{confirmarPassword}" class="login-input"/>
+                    <div class="form-feedback-custom invalid-custom" th:if="${#fields.hasErrors('confirmarPassword')}" th:errors="*{confirmarPassword}"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <span>Crear mi cuenta</span>
+                <i class="bi bi-arrow-right"></i>
+            </button>
+
+        </form>
+
+        <p class="login-footer-text">
+            ¿Ya tenes cuenta? <a th:href="@{/login}">Iniciar sesion</a>
+        </p>
+
+    </div>
+</div>
+
+<script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

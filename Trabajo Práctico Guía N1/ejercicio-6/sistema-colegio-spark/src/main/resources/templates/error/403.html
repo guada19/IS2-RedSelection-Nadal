@@ -1,0 +1,17 @@
+<!-- error/403.html - pagina mostrada por Spring Security ante un acceso no autorizado (accessDeniedPage) -->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Acceso denegado - Colegio Spark</title>
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/main.css}"/>
+</head>
+<body class="d-flex align-items-center justify-content-center vh-100">
+<div class="text-center">
+    <h1 class="display-1">403</h1>
+    <p class="lead">No tenes permisos para acceder a esta seccion.</p>
+    <a th:href="@{/panel}" class="btn-table-action">Volver al panel</a>
+</div>
+</body>
+</html>

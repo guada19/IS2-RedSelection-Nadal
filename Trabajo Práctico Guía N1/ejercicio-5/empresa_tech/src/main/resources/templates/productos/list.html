@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <section th:replace="~{fragments/layout :: main-layout('Productos', ~{::#content})}">
+        <div id="content" class="container-fluid px-4 py-4">
+            <div th:replace="~{fragments/messages :: messages}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">Productos</h1>
+                    <p class="text-muted mb-0">Catálogo de productos activos</p>
+                </div>
+                <a th:href="@{/productos/nuevo}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Nuevo Producto
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Stock Actual</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="producto : ${productos}">
+                                    <td th:text="${producto.id}">1</td>
+                                    <td th:text="${producto.nombre}">Monitor</td>
+                                    <td th:text="${'$'} + ${#numbers.formatDecimal(producto.precioUnitario, 1, 'POINT', 2, 'COMMA')}">$0.00</td>
+                                    <td>
+                                        <span class="badge rounded-pill" th:classappend="${producto.stock != null and producto.stock.cantidad <= 5 ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'}"
+                                              th:text="${producto.stock != null ? producto.stock.cantidad : 0}">0</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a th:href="@{/productos/editar/{id}(id=${producto.id})}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-pencil-square"></i>
+                                                Editar
+                                            </a>
+                                            <a href="#"
+                                               class="btn btn-sm btn-outline-danger delete-btn"
+                                               th:attr="data-url=@{/productos/eliminar/{id}(id=${producto.id})}, data-name=${producto.nombre}">
+                                                <i class="bi bi-trash"></i>
+                                                Eliminar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-btn').forEach(function (button) {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const url = button.dataset.url;
+                    const name = button.dataset.name;
+                    if (confirm('¿Desea eliminar el producto "' + name + '"?')) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

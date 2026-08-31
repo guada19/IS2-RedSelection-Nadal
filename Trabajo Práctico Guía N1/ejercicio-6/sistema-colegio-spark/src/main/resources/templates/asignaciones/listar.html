@@ -1,0 +1,65 @@
+<!-- asignaciones/listar.html (capa View - Thymeleaf) -->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecera('Asignaciones')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('asignaciones')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Asignaciones docente / materia / aula</h1>
+            <p class="page-subtitle">Define que docente dicta que materia en que aula.</p>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/panel}" class="text-decoration-none text-muted-green">Inicio</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page">Asignaciones</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="table-card-custom">
+        <div class="table-header-control">
+            <a th:href="@{/asignaciones/nuevo}" class="btn-table-action"><i class="bi bi-plus-lg"></i> Nueva asignacion</a>
+        </div>
+
+        <div class="alert alert-success m-3" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                <tr>
+                    <th>Docente</th>
+                    <th>Materia</th>
+                    <th>Aula</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${asignaciones}">
+                    <td th:text="${a.docenteNombreCompleto}"></td>
+                    <td th:text="${a.materiaNombre}"></td>
+                    <td th:text="${a.aulaNombre}"></td>
+                    <td class="text-center">
+                        <form th:action="@{/asignaciones/{id}/eliminar(id=${a.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('¿Eliminar esta asignacion?');">
+                            <button type="submit" class="btn-table-action text-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(asignaciones)}">
+                    <td colspan="4" class="text-center text-muted-green">No hay asignaciones registradas todavia.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

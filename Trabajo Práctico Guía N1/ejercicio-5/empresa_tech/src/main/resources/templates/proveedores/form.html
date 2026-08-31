@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main-layout(${id != null ? 'Editar Proveedor' : 'Nuevo Proveedor'}, ~{::#proveedor-form-content})}">
+<body>
+
+    <div id="proveedor-form-content" class="container-fluid px-4 py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-0 pt-4">
+                        <h1 class="h3 mb-0" th:text="${id != null ? 'Editar Proveedor' : 'Nuevo Proveedor'}">Nuevo Proveedor</h1>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="${id != null} ? @{/proveedores/actualizar/{id}(id=${id})} : @{/proveedores/guardar}"
+                              th:object="${proveedor}"
+                              method="post"
+                              class="row g-3">
+
+                            <!-- Razón Social -->
+                            <div class="col-md-6">
+                                <label class="form-label" for="razonSocial">Razón Social</label>
+                                <input id="razonSocial" type="text" class="form-control" th:field="*{razonSocial}" th:classappend="${#fields.hasErrors('razonSocial')} ? ' is-invalid' : ''" required/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('razonSocial')}" th:errors="*{razonSocial}"></div>
+                            </div>
+
+                            <!-- CUIT -->
+                            <div class="col-md-6">
+                                <label class="form-label" for="cuit">CUIT</label>
+                                <input id="cuit" type="text" class="form-control" th:field="*{cuit}" th:classappend="${#fields.hasErrors('cuit')} ? ' is-invalid' : ''" required/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('cuit')}" th:errors="*{cuit}"></div>
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="col-md-6">
+                                <label class="form-label" for="telefono">Teléfono</label>
+                                <input id="telefono" type="text" class="form-control" th:field="*{telefono}" th:classappend="${#fields.hasErrors('telefono')} ? ' is-invalid' : ''"/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
+                            </div>
+
+                            <!-- Botones de Acción -->
+                            <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                                <a th:href="@{/proveedores}" class="btn btn-outline-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-1"></i> Guardar Proveedor
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

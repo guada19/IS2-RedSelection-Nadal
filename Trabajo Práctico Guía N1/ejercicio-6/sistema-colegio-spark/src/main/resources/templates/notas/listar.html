@@ -1,0 +1,76 @@
+<!--
+  notas/listar.html (capa View - Thymeleaf). Si el usuario logueado es
+  ADMIN, NotaController le envia TODAS las notas; si es DOCENTE, solo las
+  que el mismo cargo (ver NotaController#listar).
+-->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: cabecera('Notas')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('notas')}"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Notas</h1>
+            <p class="page-subtitle" sec:authorize="hasRole('ADMIN')">Todas las notas cargadas por los docentes.</p>
+            <p class="page-subtitle" sec:authorize="!hasRole('ADMIN')">Las notas que cargaste en tus materias y aulas asignadas.</p>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/panel}" class="text-decoration-none text-muted-green">Inicio</a></li>
+                <li class="breadcrumb-item active text-main" aria-current="page">Notas</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="table-card-custom">
+        <div class="table-header-control">
+            <a th:href="@{/notas/nuevo}" class="btn-table-action"><i class="bi bi-plus-lg"></i> Cargar nota</a>
+        </div>
+
+        <div class="alert alert-success m-3" th:if="${mensajeExito}" th:text="${mensajeExito}"></div>
+
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                <tr>
+                    <th>Alumno</th>
+                    <th>Materia</th>
+                    <th>Docente</th>
+                    <th>Nota</th>
+                    <th>Periodo</th>
+                    <th>Fecha</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="n : ${notas}">
+                    <td th:text="${n.alumnoNombreCompleto}"></td>
+                    <td th:text="${n.materiaNombre}"></td>
+                    <td th:text="${n.docenteNombreCompleto}"></td>
+                    <td th:text="${n.valor}"></td>
+                    <td th:text="${n.periodo}"></td>
+                    <td th:text="${#temporals.format(n.fechaEvaluacion, 'dd/MM/yyyy')}"></td>
+                    <td class="text-center">
+                        <form th:action="@{/notas/{id}/eliminar(id=${n.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('¿Eliminar esta nota?');">
+                            <button type="submit" class="btn-table-action text-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(notas)}">
+                    <td colspan="7" class="text-center text-muted-green">No hay notas cargadas todavia.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
