@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!--
+    ============================================================================
+    VISTA — home.html
+    ============================================================================
+    Página privada a la que sólo se llega tras un login exitoso. El Controller
+    (ver AutenticacionController#mostrarHome) valida la existencia de sesión
+    ANTES de renderizar esta vista y coloca en el Model la entidad Usuario
+    autenticada (obtenida de la sesión HTTP), que aquí se recorre con la
+    sintaxis de expresión de Thymeleaf ${usuario.propiedad}.
+    ============================================================================
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{fragments/head :: head('Mi cuenta')}"></th:block>
+<body>
+<div class="auth-wrap">
+    <div class="aur aur-a" style="top:-80px;left:-120px"></div>
+    <div class="aur aur-b" style="top:180px;right:-180px"></div>
+
+    <div class="auth-card">
+        <div class="auth-brand">
+            <div class="logo-i"><i class="fa-solid fa-layer-group"></i></div>
+            <span>NexusAI</span>
+        </div>
+
+        <div class="auth-title" style="display:flex;align-items:center;gap:10px;justify-content:center">
+            <i class="fa-solid fa-circle-check" style="color:#34d399"></i>
+            <span>¡Bienvenido/a!</span>
+        </div>
+        <div class="auth-subtitle" th:text="${usuario.nombreCompleto}">Nombre Apellido</div>
+
+        <ul class="data-list">
+            <li><span>Correo (usuario)</span><span th:text="${usuario.correoPersonal}"></span></li>
+            <li><span>Documento</span><span th:text="${usuario.documento}"></span></li>
+            <li><span>Fecha de nacimiento</span>
+                <span th:text="${#temporals.format(usuario.fechaNacimiento, 'dd/MM/yyyy')}"></span></li>
+            <li><span>Registrado el</span>
+                <span th:text="${#temporals.format(usuario.fechaRegistro, 'dd/MM/yyyy HH:mm')}"></span></li>
+        </ul>
+
+        <a th:href="@{/logout}" class="boc btn w-100 py-3 fw-semibold fs-6 d-flex align-items-center justify-content-center gap-2">
+            <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+        </a>
+    </div>
+</div>
+</body>
+</html>

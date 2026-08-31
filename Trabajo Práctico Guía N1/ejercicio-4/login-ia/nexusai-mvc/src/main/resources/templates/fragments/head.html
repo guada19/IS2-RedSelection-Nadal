@@ -1,0 +1,113 @@
+<!--
+    ============================================================================
+    FRAGMENTO REUTILIZABLE — head.html
+    ============================================================================
+    Thymeleaf permite definir "fragmentos" (th:fragment) que luego se insertan
+    en otras plantillas con th:replace/th:insert, evitando duplicar el mismo
+    <head> (hojas de estilo, fuentes, meta tags) en login.html, registro.html
+    y home.html. Es el equivalente, dentro de la capa VISTA, al principio
+    "Don't Repeat Yourself" (DRY).
+
+    Los estilos base (variables de color --bg/--tx/--pur, clases .oinp, .olbl,
+    .bgrd, .boc, .err-msg, .tab-switch, etc.) provienen tal cual del template
+    HTML "NexusAI" provisto (css/style.css), para mantener una identidad
+    visual 100% coherente con el diseño original. Sólo se agregan, al final,
+    un puñado de clases nuevas y acotadas (.auth-*) para poder mostrar esas
+    mismas piezas de UI como página completa en lugar de como panel lateral
+    (offcanvas), ya que en una app MVC con Thymeleaf cada formulario es una
+    vista servida por el servidor (GET/POST reales), no un panel manipulado
+    por JavaScript en el cliente.
+    ============================================================================
+-->
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} + ' · NexusAI'">NexusAI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hojas de estilo originales del template (copiadas a /static/css) -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/all.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+
+    <style>
+        /* ==================================================================
+           Clases propias de esta app (no del template original), pensadas
+           para centrar las tarjetas de Login / Registro / Home como página
+           completa, reutilizando siempre las variables de color del tema
+           (--bg, --bg2, --sf, --bd, --tx, --tx2, --tx3, --pur, --grad).
+           ================================================================== */
+        .auth-wrap {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .auth-card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 440px;
+            background: var(--sf);
+            border: 1px solid var(--bd);
+            border-radius: 20px;
+            padding: 34px 32px;
+            box-shadow: 0 24px 60px rgba(0,0,0,.35);
+        }
+        .auth-card.auth-card-lg { max-width: 620px; }
+        .auth-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 22px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--tx);
+        }
+        .auth-title {
+            text-align: center;
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .auth-subtitle {
+            text-align: center;
+            font-size: .85rem;
+            color: var(--tx3);
+            margin-bottom: 22px;
+        }
+        .ok-msg {
+            background: rgba(52, 211, 153, .1);
+            border: 1px solid rgba(52, 211, 153, .3);
+            color: #34d399;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: .82rem;
+            margin-bottom: 14px;
+        }
+        .field-err {
+            color: #f87171;
+            font-size: .76rem;
+            margin: -10px 0 12px;
+            display: block;
+        }
+        .auth-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        @media (max-width: 480px) { .auth-row-2 { grid-template-columns: 1fr; } }
+        .data-list { list-style: none; padding: 0; margin: 0 0 24px; }
+        .data-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--bd);
+            font-size: .9rem;
+        }
+        .data-list li span:first-child { color: var(--tx3); }
+        .data-list li span:last-child { color: var(--tx); font-weight: 600; }
+    </style>
+</head>
