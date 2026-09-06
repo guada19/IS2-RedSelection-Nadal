@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/nexusai-auth-mvc.iml" filepath="$PROJECT_DIR$/.idea/nexusai-auth-mvc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/login-ia.iml" filepath="$PROJECT_DIR$/.idea/login-ia.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nexusai-mvc/nexusai-auth-mvc.iml" filepath="$PROJECT_DIR$/nexusai-mvc/nexusai-auth-mvc.iml" />
     </modules>
   </component>
 </project>
