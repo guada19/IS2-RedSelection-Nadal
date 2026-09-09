@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/fragments :: cabecera('Detalle de cuota')}"></head>
+<body>
+
+<div th:replace="~{layout/fragments :: sidebar('socios')}"></div>
+
+<div class="main-wrapper">
+    <header th:replace="~{layout/fragments :: topbar}"></header>
+    <div th:replace="~{layout/fragments :: alertas}"></div>
+
+    <main class="container-fluid p-4">
+        <h3 class="mb-1">Cuota <span th:text="${cuota.periodo}">2026-09</span></h3>
+        <p class="text-muted" th:text="'Grupo familiar: ' + ${cuota.nombreGrupoFamiliar}">Grupo familiar</p>
+
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="table-card-custom p-4">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Monto total</span>
+                        <strong th:text="'$' + ${cuota.montoTotal}">$0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Pagado</span>
+                        <strong th:text="'$' + ${cuota.montoPagado}">$0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Estado</span>
+                        <span th:switch="${cuota.estado}">
+                            <span th:case="'PAGADA'" class="badge-estado-pagada">Pagada</span>
+                            <span th:case="'PARCIAL'" class="badge-estado-parcial">Parcial</span>
+                            <span th:case="'VENCIDA'" class="badge-estado-vencida">Vencida</span>
+                            <span th:case="*" class="badge-estado-pendiente">Pendiente</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ============ Registrar pago (Efectivo / Transferencia / Mercado Pago) ============ -->
+                <div class="table-card-custom p-4 mt-3" sec:authorize="hasRole('ADMIN')" th:if="${cuota.estado.name() != 'PAGADA'}">
+                    <h5>Registrar pago</h5>
+                    <form th:action="@{/cuotas/{id}/pagos(id=${cuota.id})}" th:object="${nuevoPago}" method="post" class="row g-2">
+                        <input type="hidden" th:field="*{cuotaId}"/>
+
+                        <div class="col-6">
+                            <label class="form-label">Monto</label>
+                            <input type="number" step="0.01" class="form-control" th:field="*{monto}"/>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Medio de pago</label>
+                            <select class="form-select" id="tipoMedioPago" th:field="*{tipoMedioPago}">
+                                <option value="EFECTIVO">Efectivo</option>
+                                <option value="TRANSFERENCIA">Transferencia</option>
+                                <option value="MERCADO_PAGO">Mercado Pago</option>
+                            </select>
+                        </div>
+
+                        <!-- Campos específicos de EFECTIVO -->
+                        <div class="col-12 medio-pago-fields activo" data-medio="EFECTIVO">
+                            <div class="row g-2 mt-1">
+                                <div class="col-6"><input type="text" class="form-control" placeholder="N° de recibo" th:field="*{numeroRecibo}"/></div>
+                                <div class="col-6"><input type="text" class="form-control" placeholder="Recibido por" th:field="*{recibidoPor}"/></div>
+                            </div>
+                        </div>
+
+                        <!-- Campos específicos de TRANSFERENCIA -->
+                        <div class="col-12 medio-pago-fields" data-medio="TRANSFERENCIA">
+                            <div class="row g-2 mt-1">
+                                <div class="col-4"><input type="text" class="form-control" placeholder="CBU/CVU" th:field="*{cbuCvu}"/></div>
+                                <div class="col-4"><input type="text" class="form-control" placeholder="Entidad bancaria" th:field="*{entidadBancaria}"/></div>
+                                <div class="col-4"><input type="text" class="form-control" placeholder="N° operación" th:field="*{numeroOperacion}"/></div>
+                            </div>
+                        </div>
+
+                        <!-- Campos específicos de MERCADO PAGO -->
+                        <div class="col-12 medio-pago-fields" data-medio="MERCADO_PAGO">
+                            <div class="row g-2 mt-1">
+                                <div class="col-6"><input type="email" class="form-control" placeholder="Email del comprador" th:field="*{emailComprador}"/></div>
+                                <div class="col-6"><input type="text" class="form-control" placeholder="ID transacción (opcional, se autogenera)" th:field="*{idTransaccionMp}"/></div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label mt-2">Observaciones</label>
+                            <input type="text" class="form-control" th:field="*{observaciones}"/>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <button type="submit" class="btn btn-success"><i class="bi bi-cash-coin"></i> Registrar pago</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="table-card-custom p-4">
+                    <h5>Pagos registrados</h5>
+                    <table class="table-custom">
+                        <thead><tr><th>Fecha</th><th>Monto</th><th>Medio de pago</th></tr></thead>
+                        <tbody>
+                        <tr th:each="p : ${cuota.pagos}">
+                            <td th:text="${#temporals.format(p.fechaPago, 'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+                            <td th:text="'$' + ${p.monto}">$0</td>
+                            <td th:text="${p.descripcionMedioPago}">Efectivo</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(cuota.pagos)}">
+                            <td colspan="3" class="text-center text-muted py-3">Todavía no se registraron pagos.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{layout/fragments :: scripts}"></div>
+
+<!-- Muestra/oculta los campos propios de cada medio de pago (sin recargar la página) -->
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        var select = document.getElementById('tipoMedioPago');
+        if (!select) return;
+        function actualizar() {
+            document.querySelectorAll('.medio-pago-fields').forEach(function (div) {
+                div.classList.toggle('activo', div.dataset.medio === select.value);
+            });
+        }
+        select.addEventListener('change', actualizar);
+        actualizar();
+    });
+</script>
+</body>
+</html>

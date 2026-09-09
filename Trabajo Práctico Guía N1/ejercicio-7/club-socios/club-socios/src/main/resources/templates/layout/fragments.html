@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--
+    ============================================================================
+    FRAGMENTOS DE LAYOUT (Thymeleaf th:fragment)
+    ============================================================================
+    Este archivo NO se renderiza solo: cada página del sistema importa estos
+    fragmentos con th:replace="~{layout/fragments :: nombreFragmento}" para
+    no duplicar el <head>, la barra lateral (sidebar) ni el navbar en cada
+    vista. Es la forma estándar de Thymeleaf de lograr un "layout" reusable
+    (equivalente a un "master page" / "_Layout" de otros frameworks MVC).
+
+    El markup visual (clases CSS) se tomó de la plantilla Bootstrap 5
+    "Spark Admin" provista por la cátedra, adaptada para el club deportivo.
+    ============================================================================
+-->
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="cabecera(titulo)">
+    <!-- ============ FRAGMENTO: cabecera (head) ============ -->
+    <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title th:text="${titulo} + ' - Club Socios'">Club Socios</title>
+        <link rel="icon" type="image/png" th:href="@{/images/favicon.ico}"/>
+
+        <link rel="stylesheet" th:href="@{/libs/bootstrap/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" th:href="@{/libs/bootstrap-icons/bootstrap-icons.css}"/>
+        <link rel="stylesheet" th:href="@{/libs/apexcharts/apexcharts.css}"/>
+        <link rel="stylesheet" th:href="@{/libs/flatpickr/flatpickr.min.css}"/>
+        <link rel="stylesheet" th:href="@{/css/main.css}"/>
+        <link rel="stylesheet" th:href="@{/css/club-socios.css}"/>
+</head>
+<body>
+
+<!-- ============ FRAGMENTO: sidebar (menú lateral) ============ -->
+<div th:fragment="sidebar(activo)" class="sidebar-wrapper" id="sidebar">
+    <a th:href="@{/dashboard}" class="sidebar-brand">
+        <i class="bi bi-asterisk"></i>
+        <span>Club Socios</span>
+    </a>
+
+    <div class="flex-grow-1 overflow-y-auto">
+        <div class="sidebar-menu-section">
+            <div class="sidebar-menu-title">Menú</div>
+            <ul class="sidebar-menu-list">
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/dashboard}" class="sidebar-menu-link" th:classappend="${activo == 'dashboard'} ? ' active'">
+                        <i class="bi bi-grid-fill"></i><span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a th:href="@{/socios}" class="sidebar-menu-link" th:classappend="${activo == 'socios'} ? ' active'">
+                        <i class="bi bi-people-fill"></i><span>Socios y Familias</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="sidebar-profile">
+        <img th:src="@{/images/avatar.png}" alt="Usuario" class="sidebar-profile-img"/>
+        <div class="sidebar-profile-info">
+            <div class="sidebar-profile-name" sec:authentication="name">Usuario</div>
+            <div class="sidebar-profile-email" sec:authorize="hasRole('ADMIN')">Administrador</div>
+            <div class="sidebar-profile-email" sec:authorize="hasRole('RECEPCIONISTA')">Recepción</div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ FRAGMENTO: topbar (barra superior + logout) ============ -->
+<header th:fragment="topbar" class="navbar-custom">
+    <div class="navbar-left">
+        <button class="sidebar-toggle-btn me-2" id="sidebar-toggle" aria-label="Menú">
+            <i class="bi bi-list"></i>
+        </button>
+    </div>
+    <div class="navbar-right d-flex align-items-center gap-3">
+        <form th:action="@{/logout}" method="post" class="m-0">
+            <button type="submit" class="btn-table-action">
+                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+            </button>
+        </form>
+    </div>
+</header>
+
+<!-- ============ FRAGMENTO: alertas (mensajes flash de éxito/error) ============ -->
+<th:block th:fragment="alertas">
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show m-3" role="alert">
+        <span th:text="${mensajeExito}">Operación exitosa</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+        <span th:text="${mensajeError}">Ocurrió un error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+</th:block>
+
+<!-- ============ FRAGMENTO: scripts (JS común al final del body) ============ -->
+<th:block th:fragment="scripts">
+    <script th:src="@{/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/libs/apexcharts/apexcharts.min.js}"></script>
+    <script th:src="@{/libs/flatpickr/flatpickr.min.js}"></script>
+    <script th:src="@{/js/dashboard.js}"></script>
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================================
+  PLAN DE PRUEBAS DE CARGA Y ESTRÉS - Apache JMeter
+  ============================================================================
+  Cómo usarlo:
+    1) Descargar Apache JMeter (https://jmeter.apache.org/).
+    2) Levantar la aplicación (mvn spring-boot:run) contra MySQL.
+    3) Abrir este archivo desde la GUI de JMeter (File > Open) o ejecutarlo
+       en modo consola:
+         jmeter -n -t plan-club-socios.jmx -l resultados.jtl -e -o reporte-html
+    4) Ajustar "USUARIOS_CONCURRENTES" y "RAMP_UP" según el escenario:
+         - PRUEBA DE CARGA:   50 usuarios,  ramp-up 30s, 10 iteraciones
+         - PRUEBA DE ESTRÉS:  500 usuarios, ramp-up 20s, 1 iteración (loop),
+           incrementando progresivamente hasta encontrar el punto de quiebre
+           (tiempos de respuesta > 3s o tasa de error > 5%).
+
+  Escenarios cubiertos (los "endpoints" más usados por el molinete/recepción
+  y por la administración, según lo medido en un club real):
+    1) Login (POST /login) - autenticación de recepcionistas.
+    2) Listado de socios (GET /socios) - la pantalla más consultada.
+    3) Registro de acceso (POST /socios/{id}/acceso) - la operación de
+       mayor frecuencia real (cada persona que entra/sale del club).
+  ============================================================================
+-->
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Plan de Carga - Club Socios" enabled="true">
+      <stringProp name="TestPlan.comments">Pruebas de carga y estres del modulo de control de acceso y consulta de socios</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="Variables de usuario" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="HOST" elementType="Argument">
+            <stringProp name="Argument.name">HOST</stringProp>
+            <stringProp name="Argument.value">localhost</stringProp>
+          </elementProp>
+          <elementProp name="PORT" elementType="Argument">
+            <stringProp name="Argument.name">PORT</stringProp>
+            <stringProp name="Argument.value">8080</stringProp>
+          </elementProp>
+          <elementProp name="USUARIOS_CONCURRENTES" elementType="Argument">
+            <stringProp name="Argument.name">USUARIOS_CONCURRENTES</stringProp>
+            <stringProp name="Argument.value">50</stringProp>
+          </elementProp>
+          <elementProp name="RAMP_UP" elementType="Argument">
+            <stringProp name="Argument.name">RAMP_UP</stringProp>
+            <stringProp name="Argument.value">30</stringProp>
+          </elementProp>
+          <elementProp name="ITERACIONES" elementType="Argument">
+            <stringProp name="Argument.name">ITERACIONES</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
+          </elementProp>
+          <elementProp name="SOCIO_ID_PRUEBA" elementType="Argument">
+            <stringProp name="Argument.name">SOCIO_ID_PRUEBA</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+
+      <!-- ==================== HTTP Cookie Manager (necesario para mantener sesión tras el login) ==================== -->
+      <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="Administrador de cookies HTTP" enabled="true">
+        <boolProp name="clearEachIteration">false</boolProp>
+      </CookieManager>
+      <hashTree/>
+
+      <!-- ==================== Grupo de hilos: Recepción (control de acceso) ==================== -->
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Recepcion - Login y Registro de Acceso" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${ITERACIONES}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${USUARIOS_CONCURRENTES}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${RAMP_UP}</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+      </ThreadGroup>
+      <hashTree>
+
+        <!-- 1) LOGIN -->
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /login" enabled="true">
+          <stringProp name="HTTPSampler.domain">${HOST}</stringProp>
+          <stringProp name="HTTPSampler.port">${PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.path">/login</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="username" elementType="HTTPArgument">
+                <stringProp name="Argument.name">username</stringProp>
+                <stringProp name="Argument.value">recepcion</stringProp>
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+              </elementProp>
+              <elementProp name="password" elementType="HTTPArgument">
+                <stringProp name="Argument.name">password</stringProp>
+                <stringProp name="Argument.value">recepcion123</stringProp>
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+
+        <!-- Pausa aleatoria simulando el tiempo de "pensamiento" real del usuario -->
+        <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Tiempo entre acciones" enabled="true">
+          <stringProp name="ConstantTimer.delay">300</stringProp>
+          <stringProp name="RandomTimer.range">700</stringProp>
+        </UniformRandomTimer>
+        <hashTree/>
+
+        <!-- 2) LISTADO DE SOCIOS -->
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /socios" enabled="true">
+          <stringProp name="HTTPSampler.domain">${HOST}</stringProp>
+          <stringProp name="HTTPSampler.port">${PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.path">/socios</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+
+        <!-- 3) REGISTRAR ACCESO (operación más frecuente en un club real: molinete de entrada/salida) -->
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /socios/{id}/acceso" enabled="true">
+          <stringProp name="HTTPSampler.domain">${HOST}</stringProp>
+          <stringProp name="HTTPSampler.port">${PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.path">/socios/${SOCIO_ID_PRUEBA}/acceso</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+
+        <!-- ==================== Listeners (resultados) ==================== -->
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="Ver Resultados en Árbol" enabled="true">
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+
+        <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Informe Resumen" enabled="true">
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Estadísticas Agregadas" enabled="true">
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/fragments :: cabecera('Ficha del socio')}"></head>
+<body>
+
+<div th:replace="~{layout/fragments :: sidebar('socios')}"></div>
+
+<div class="main-wrapper">
+    <header th:replace="~{layout/fragments :: topbar}"></header>
+    <div th:replace="~{layout/fragments :: alertas}"></div>
+
+    <main class="container-fluid p-4">
+
+        <!-- ============ Datos del socio titular ============ -->
+        <div class="table-card-custom p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="d-flex gap-3">
+                    <img th:if="${socio.urlImagenRostro}" src="/images/avatar.png" class="avatar-persona" alt="Foto"/>
+                    <div>
+                        <h4 class="m-0" th:text="${socio.apellido} + ', ' + ${socio.nombre}">Apellido, Nombre</h4>
+                        <div class="text-muted">
+                            DNI <span th:text="${socio.dni}">00000000</span> ·
+                            Socio N° <span th:text="${socio.numeroSocio}">-</span> ·
+                            Categoría <span th:text="${socio.categoria}">-</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <form th:action="@{/socios/{id}/acceso(id=${socio.id})}" method="post">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-door-open"></i> Registrar entrada/salida
+                        </button>
+                    </form>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/socios/{id}/editar(id=${socio.id})}" class="btn btn-outline-secondary">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- ============ Grupo familiar (AGREGACIÓN) ============ -->
+            <div class="col-lg-6">
+                <div class="table-card-custom p-4 h-100">
+                    <h5 th:text="${grupoFamiliar.nombreGrupo}">Familia</h5>
+                    <p class="text-muted small">
+                        <span th:text="${grupoFamiliar.cantidadIntegrantes}">1</span> integrante(s) en total
+                        (titular + familiares)
+                    </p>
+
+                    <table class="table-custom mb-3">
+                        <thead><tr><th>Familiar</th><th>Parentesco</th><th>DNI</th><th></th></tr></thead>
+                        <tbody>
+                        <tr th:each="f : ${grupoFamiliar.familiares}">
+                            <td th:text="${f.apellido} + ', ' + ${f.nombre}">Apellido, Nombre</td>
+                            <td><span class="badge-parentesco" th:text="${f.parentesco}">HIJO_A</span></td>
+                            <td th:text="${f.dni}">00000000</td>
+                            <td class="d-flex gap-1">
+                                <form th:action="@{/familiares/{id}/acceso(id=${f.id})}" method="post">
+                                    <button type="submit" class="btn-table-action" title="Registrar acceso">
+                                        <i class="bi bi-door-open"></i>
+                                    </button>
+                                </form>
+                                <form th:action="@{/socios/{id}/familiares/{fid}/eliminar(id=${socio.id},fid=${f.id})}" method="post">
+                                    <button sec:authorize="hasRole('ADMIN')" type="submit" class="btn-table-action" title="Quitar del grupo">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(grupoFamiliar.familiares)}">
+                            <td colspan="4" class="text-center text-muted py-3">Sin familiares cargados todavía.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Alta de un nuevo integrante del grupo familiar (AGREGACIÓN) -->
+                    <details>
+                        <summary class="btn btn-outline-primary btn-sm mb-2">+ Agregar familiar</summary>
+                        <form th:action="@{/socios/{id}/familiares(id=${socio.id})}" th:object="${nuevoFamiliar}"
+                              method="post" enctype="multipart/form-data" class="row g-2 mt-1">
+                            <div class="col-6"><input type="text" class="form-control form-control-sm" placeholder="Nombre" th:field="*{nombre}"/></div>
+                            <div class="col-6"><input type="text" class="form-control form-control-sm" placeholder="Apellido" th:field="*{apellido}"/></div>
+                            <div class="col-6"><input type="text" class="form-control form-control-sm" placeholder="DNI" th:field="*{dni}"/></div>
+                            <div class="col-6"><input type="date" class="form-control form-control-sm" th:field="*{fechaNacimiento}"/></div>
+                            <div class="col-6">
+                                <select class="form-select form-select-sm" th:field="*{parentesco}">
+                                    <option th:each="p : ${T(com.club.socios.domain.enums.Parentesco).values()}"
+                                            th:value="${p}" th:text="${p}"></option>
+                                </select>
+                            </div>
+                            <div class="col-6"><input type="file" class="form-control form-control-sm" name="fotoRostro" accept="image/*"/></div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success btn-sm">Guardar familiar</button>
+                            </div>
+                        </form>
+                    </details>
+                </div>
+            </div>
+
+            <!-- ============ Cuotas del grupo familiar (COMPOSICIÓN) ============ -->
+            <div class="col-lg-6">
+                <div class="table-card-custom p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="m-0">Cuotas del grupo familiar</h5>
+                        <a sec:authorize="hasRole('ADMIN')" th:href="@{/cuotas/nueva(grupoFamiliarId=${grupoFamiliar.id})}" class="btn btn-sm btn-success">
+                            <i class="bi bi-plus-lg"></i> Nueva cuota
+                        </a>
+                    </div>
+                    <table class="table-custom mt-2">
+                        <thead><tr><th>Período</th><th>Monto</th><th>Estado</th><th></th></tr></thead>
+                        <tbody>
+                        <tr th:each="c : ${cuotas}">
+                            <td th:text="${c.periodo}">2026-09</td>
+                            <td th:text="'$' + ${c.montoTotal}">$0</td>
+                            <td>
+                                <span th:switch="${c.estado}">
+                                    <span th:case="'PAGADA'" class="badge-estado-pagada">Pagada</span>
+                                    <span th:case="'PARCIAL'" class="badge-estado-parcial">Parcial</span>
+                                    <span th:case="'VENCIDA'" class="badge-estado-vencida">Vencida</span>
+                                    <span th:case="*" class="badge-estado-pendiente">Pendiente</span>
+                                </span>
+                            </td>
+                            <td><a th:href="@{/cuotas/{id}(id=${c.id})}" class="btn-table-action">Ver</a></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(cuotas)}">
+                            <td colspan="4" class="text-center text-muted py-3">Sin cuotas generadas todavía.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Historial de accesos (ASOCIACIÓN Persona-RegistroAcceso) ============ -->
+        <div class="table-card-custom p-4 mt-4">
+            <h5>Historial de accesos (titular)</h5>
+            <table class="table-custom">
+                <thead><tr><th>Fecha y hora</th><th>Movimiento</th><th>Punto de acceso</th><th>Reconocimiento facial</th></tr></thead>
+                <tbody>
+                <tr th:each="a : ${historialAccesos}">
+                    <td th:text="${#temporals.format(a.fechaHora, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</td>
+                    <td>
+                        <span th:if="${a.tipo.name() == 'ENTRADA'}" class="badge-table success">Entrada</span>
+                        <span th:unless="${a.tipo.name() == 'ENTRADA'}" class="badge-table">Salida</span>
+                    </td>
+                    <td th:text="${a.puntoAcceso}">Molinete Principal</td>
+                    <td th:text="${a.reconocimientoExitoso} ? 'OK' : 'Manual'">OK</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(historialAccesos)}">
+                    <td colspan="4" class="text-center text-muted py-3">Todavía no registró ingresos/egresos.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

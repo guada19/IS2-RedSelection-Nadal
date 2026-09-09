@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/fragments :: cabecera('Socios')}"></head>
+<body>
+
+<div th:replace="~{layout/fragments :: sidebar('socios')}"></div>
+
+<div class="main-wrapper">
+    <header th:replace="~{layout/fragments :: topbar}"></header>
+    <div th:replace="~{layout/fragments :: alertas}"></div>
+
+    <main class="container-fluid p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="m-0">Socios</h3>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/socios/nuevo}" class="btn btn-success">
+                <i class="bi bi-plus-lg"></i> Nuevo socio
+            </a>
+        </div>
+
+        <div class="table-card-custom">
+            <div class="table-header-control">
+                <form th:action="@{/socios}" method="get" class="table-search-box">
+                    <i class="bi bi-search table-search-icon"></i>
+                    <input type="text" name="texto" class="table-search-input"
+                           placeholder="Buscar por nombre, apellido o DNI..." th:value="${textoBusqueda}"/>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table-custom">
+                    <thead>
+                    <tr>
+                        <th>Socio</th>
+                        <th>DNI</th>
+                        <th>N° Socio</th>
+                        <th>Categoría</th>
+                        <th>Familiares</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="s : ${socios}">
+                        <td class="table-user-cell">
+                            <div class="table-user-name" th:text="${s.apellido} + ', ' + ${s.nombre}">Apellido, Nombre</div>
+                        </td>
+                        <td th:text="${s.dni}">00000000</td>
+                        <td th:text="${s.numeroSocio}">S-0001</td>
+                        <td th:text="${s.categoria}">Individual</td>
+                        <td th:text="${s.cantidadFamiliares}">0</td>
+                        <td>
+                            <span class="badge-table success" th:if="${s.activo}">Activo</span>
+                            <span class="badge-table" th:unless="${s.activo}">Inactivo</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/socios/{id}(id=${s.id})}" class="btn-table-action">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(socios)}">
+                        <td colspan="7" class="text-center text-muted py-4">No se encontraron socios.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

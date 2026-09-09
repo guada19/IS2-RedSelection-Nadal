@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: cabecera(${esNuevo} ? 'Nuevo socio' : 'Editar socio')}"></head>
+<body>
+
+<div th:replace="~{layout/fragments :: sidebar('socios')}"></div>
+
+<div class="main-wrapper">
+    <header th:replace="~{layout/fragments :: topbar}"></header>
+
+    <main class="container-fluid p-4">
+        <h3 class="mb-4" th:text="${esNuevo} ? 'Nuevo socio' : 'Editar socio'">Nuevo socio</h3>
+
+        <div class="table-card-custom p-4" style="max-width: 780px;">
+            <!-- enctype multipart: permite adjuntar la foto de rostro (composición ImagenRostro) -->
+            <form th:action="${esNuevo} ? @{/socios} : @{/socios/{id}(id=${socio.id})}"
+                  th:object="${socio}" method="post" enctype="multipart/form-data" class="row g-3">
+
+                <input type="hidden" th:field="*{id}"/>
+
+                <div class="col-md-6">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" class="form-control" th:field="*{nombre}"/>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Apellido</label>
+                    <input type="text" class="form-control" th:field="*{apellido}"/>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">DNI</label>
+                    <input type="text" class="form-control" th:field="*{dni}"/>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Fecha de nacimiento</label>
+                    <input type="date" class="form-control" th:field="*{fechaNacimiento}"/>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">N° de socio</label>
+                    <input type="text" class="form-control" th:field="*{numeroSocio}"/>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" th:field="*{email}"/>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" th:field="*{telefono}"/>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Categoría social</label>
+                    <select class="form-select" th:field="*{categoria}">
+                        <option value="Individual">Individual</option>
+                        <option value="Familiar">Familiar</option>
+                        <option value="Vitalicio">Vitalicio</option>
+                        <option value="Cadete">Cadete</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Foto de rostro (control de acceso)</label>
+                    <input type="file" class="form-control" name="fotoRostro" accept="image/*"/>
+                </div>
+
+                <div class="col-12 d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg"></i> Guardar
+                    </button>
+                    <a th:href="@{/socios}" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

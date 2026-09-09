@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/fragments :: cabecera('Dashboard')}"></head>
+<body>
+
+<div th:replace="~{layout/fragments :: sidebar('dashboard')}"></div>
+
+<div class="main-wrapper">
+    <header th:replace="~{layout/fragments :: topbar}"></header>
+    <div th:replace="~{layout/fragments :: alertas}"></div>
+
+    <main class="container-fluid p-4">
+        <h3 class="mb-4">Panel general</h3>
+
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="table-card-custom p-3">
+                    <div class="text-muted small">Socios activos</div>
+                    <div class="fs-2 fw-bold" th:text="${totalSocios}">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="table-card-custom p-3">
+                    <div class="text-muted small">Accesos registrados hoy</div>
+                    <div class="fs-2 fw-bold" th:text="${accesosHoy}">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="table-card-custom p-3">
+                    <div class="text-muted small">Cuotas pendientes</div>
+                    <div class="fs-2 fw-bold text-warning" th:text="${cuotasPendientes}">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="table-card-custom p-3">
+                    <div class="text-muted small">Cuotas vencidas</div>
+                    <div class="fs-2 fw-bold text-danger" th:text="${cuotasVencidas}">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a th:href="@{/socios}" class="btn-login" style="max-width:260px">
+                <span>Ir a Socios y Familias</span> <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

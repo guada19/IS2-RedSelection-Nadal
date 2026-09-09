@@ -1,0 +1,42 @@
+/* ============================================================================
+   Estilos propios del proyecto "Club Socios", complementarios a main.css
+   de la plantilla Spark Admin (no se modifica el archivo original de la
+   plantilla para poder actualizarla en el futuro sin conflictos).
+   ============================================================================ */
+
+.badge-parentesco {
+    background-color: #eef2ff;
+    color: #4338ca;
+    padding: .25rem .6rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+.badge-estado-pendiente { background-color: #fff7ed; color: #c2410c; }
+.badge-estado-parcial   { background-color: #eff6ff; color: #1d4ed8; }
+.badge-estado-pagada    { background-color: #ecfdf5; color: #047857; }
+.badge-estado-vencida   { background-color: #fef2f2; color: #b91c1c; }
+
+.badge-estado-pendiente, .badge-estado-parcial, .badge-estado-pagada, .badge-estado-vencida {
+    padding: .3rem .7rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.avatar-persona {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e5e7eb;
+}
+
+.medio-pago-fields {
+    display: none;
+}
+.medio-pago-fields.activo {
+    display: block;
+}
